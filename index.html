@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IIMI Logo Editor</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1a1a;color:#e0e0e0;display:flex;flex-direction:row;height:100vh}
+
+.canvas-side{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:20px;
+  overflow:hidden;
+}
+canvas{border-radius:12px;cursor:grab;display:block;max-width:100%;max-height:100%}
+canvas:active{cursor:grabbing}
+.hint{font-size:11px;color:#666;text-align:center}
+.reset-btn{background:transparent;border:1px solid #333;color:#888;font-size:11px;padding:5px 14px;border-radius:6px;cursor:pointer;transition:all .15s;flex-shrink:0}
+.reset-btn:hover{border-color:#555;color:#ccc}
+
+.ctrl-side{
+  width:300px;
+  min-width:300px;
+  background:#111;
+  border-left:1px solid #222;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  overflow:hidden;
+}
+.ctrl-scroll{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:16px 14px 20px;
+  scrollbar-width:thin;
+  scrollbar-color:#2a2a2a transparent;
+}
+.ctrl-scroll::-webkit-scrollbar{width:4px}
+.ctrl-scroll::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:2px}
+.ctrl-scroll::-webkit-scrollbar-track{background:transparent}
+
+.ctrl-footer{
+  padding:12px 14px;
+  border-top:1px solid #222;
+  flex-shrink:0;
+}
+
+.sec{border-bottom:1px solid #1e1e1e;padding-bottom:12px;margin-bottom:12px}
+.sec:last-child{border-bottom:none;margin-bottom:0}
+.stitle{font-size:10px;font-weight:600;color:#555;letter-spacing:.14em;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block}
+.dot-a{background:#e05a2b}.dot-b{background:#3a7bd5}
+
+.row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.row:last-child{margin-bottom:0}
+.row label{font-size:11px;color:#888;min-width:76px;flex-shrink:0}
+.row input[type=range]{flex:1;min-width:0;accent-color:#555;height:3px;cursor:pointer}
+.val{font-size:11px;color:#ccc;min-width:36px;text-align:right;font-variant-numeric:tabular-nums}
+
+.segs{display:flex;gap:0;border:1px solid #2a2a2a;border-radius:6px;overflow:hidden;margin-bottom:6px}
+.segs button{flex:1;border:none;background:transparent;font-size:10px;color:#666;padding:5px 2px;cursor:pointer;transition:background .1s;white-space:nowrap}
+.segs button.on{background:#2a2a2a;color:#ddd;font-weight:600}
+.segs button:not(:last-child){border-right:1px solid #2a2a2a}
+.segs button:hover:not(.on){background:#1e1e1e;color:#aaa}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.col-head{font-size:10px;font-weight:500;margin-bottom:5px;color:#666}
+.mr{display:flex;align-items:center;gap:4px;margin-bottom:5px}
+.mr label{font-size:10px;color:#777;min-width:40px;flex-shrink:0}
+.mr input[type=range]{flex:1;min-width:0;accent-color:#555;height:3px;cursor:pointer}
+.mr .val{font-size:10px;color:#bbb;min-width:28px;text-align:right;font-variant-numeric:tabular-nums}
+
+.info{font-size:10px;color:#555;margin-bottom:7px;line-height:1.4}
+
+.xbtn{
+  width:100%;
+  padding:9px;
+  border:1px solid #333;
+  background:transparent;
+  border-radius:8px;
+  font-size:12px;
+  color:#ccc;
+  cursor:pointer;
+  transition:all .15s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.xbtn:hover{background:#1e1e1e;border-color:#444;color:#fff}
+</style>
+</head>
+<body>
+
+<div class="canvas-side">
+  <canvas id="c"></canvas>
+  <p class="hint">тягни мишею для обертання</p>
+  <button class="reset-btn" onclick="resetView()">скинути вигляд</button>
+</div>
+
+<div class="ctrl-side">
+  <div class="ctrl-scroll">
+
+    <div class="sec">
+      <div class="stitle">Камера</div>
+      <div class="row"><label>Нахил X</label><input type="range" id="v-rx" min="-80" max="80" step="1" value="-28"><span class="val" id="dv-rx">-28°</span></div>
+      <div class="row"><label>Поворот Y</label><input type="range" id="v-ry" min="-180" max="180" step="1" value="18"><span class="val" id="dv-ry">18°</span></div>
+      <div class="row"><label>Масштаб</label><input type="range" id="v-sc" min="30" max="220" step="1" value="110"><span class="val" id="dv-sc">110%</span></div>
+    </div>
+
+    <div class="sec">
+      <div class="stitle">Extrude</div>
+      <div class="row"><label>Глибина</label><input type="range" id="e-d" min="0" max="70" step="1" value="10"><span class="val" id="de-d">10</span></div>
+      <div class="row"><label>Напрямок</label>
+        <div class="segs" style="flex:1;margin-bottom:0">
+          <button class="on" onclick="setSt('up',this)">↑ Вгору</button>
+          <button onclick="setSt('down',this)">↓ Вниз</button>
+          <button onclick="setSt('out',this)">→ Назовні</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="stitle">Радіуси</div>
+      <div class="row"><label>Внутр r (A)</label><input type="range" id="g-ri" min="0" max="100" step="1" value="40"><span class="val" id="dg-ri">40</span></div>
+      <div class="row"><label>Середній r</label><input type="range" id="g-rm" min="20" max="130" step="1" value="78"><span class="val" id="dg-rm">78</span></div>
+      <div class="row"><label>Зовн r (B)</label><input type="range" id="g-ro" min="40" max="148" step="1" value="118"><span class="val" id="dg-ro">118</span></div>
+      <div class="row"><label>Gap</label><input type="range" id="g-gap" min="0" max="14" step=".5" value="2"><span class="val" id="dg-gap">2</span></div>
+    </div>
+
+    <div class="sec">
+      <div class="stitle">Сегмент A <span class="dot dot-a"></span></div>
+      <div class="info">від внутр r → середній r</div>
+      <div class="two-col">
+        <div>
+          <div class="col-head">Товщина</div>
+          <div class="mr"><label>Мін</label><input type="range" id="a-wn" min="1" max="20" step=".5" value="4"><span class="val" id="da-wn">4</span></div>
+          <div class="mr"><label>Макс</label><input type="range" id="a-wx" min="2" max="30" step=".5" value="13"><span class="val" id="da-wx">13</span></div>
+          <div class="mr"><label>Хвиль</label><input type="range" id="a-ww" min="1" max="5" step="1" value="1"><span class="val" id="da-ww">1</span></div>
+          <div class="mr"><label>Фаза</label><input type="range" id="a-wp" min="0" max="360" step="5" value="0"><span class="val" id="da-wp">0°</span></div>
+        </div>
+        <div>
+          <div class="col-head">Висота %</div>
+          <div class="mr"><label>Мін</label><input type="range" id="a-hn" min="10" max="100" step="1" value="40"><span class="val" id="da-hn">40</span></div>
+          <div class="mr"><label>Макс</label><input type="range" id="a-hx" min="20" max="100" step="1" value="100"><span class="val" id="da-hx">100</span></div>
+          <div class="mr"><label>Хвиль</label><input type="range" id="a-hw" min="1" max="5" step="1" value="1"><span class="val" id="da-hw">1</span></div>
+          <div class="mr"><label>Фаза</label><input type="range" id="a-hp" min="0" max="360" step="5" value="90"><span class="val" id="da-hp">90°</span></div>
+        </div>
+      </div>
+      <div class="mr" style="margin-top:8px"><label>Кількість</label><input type="range" id="a-n" min="2" max="60" step="1" value="20"><span class="val" id="da-n">20</span></div>
+      <div class="mr"><label>Старт °</label><input type="range" id="a-rot" min="0" max="360" step="1" value="0"><span class="val" id="da-rot">0°</span></div>
+      <div class="mr"><label>Закрутка</label><input type="range" id="a-sw" min="-60" max="60" step=".5" value="0"><span class="val" id="da-sw">0°</span></div>
+    </div>
+
+    <div class="sec">
+      <div class="stitle">Сегмент B <span class="dot dot-b"></span></div>
+      <div class="info">від середній r → зовн r</div>
+      <div class="two-col">
+        <div>
+          <div class="col-head">Товщина</div>
+          <div class="mr"><label>Мін</label><input type="range" id="b-wn" min="1" max="20" step=".5" value="2"><span class="val" id="db-wn">2</span></div>
+          <div class="mr"><label>Макс</label><input type="range" id="b-wx" min="2" max="30" step=".5" value="7"><span class="val" id="db-wx">7</span></div>
+          <div class="mr"><label>Хвиль</label><input type="range" id="b-ww" min="1" max="5" step="1" value="1"><span class="val" id="db-ww">1</span></div>
+          <div class="mr"><label>Фаза</label><input type="range" id="b-wp" min="0" max="360" step="5" value="180"><span class="val" id="db-wp">180°</span></div>
+        </div>
+        <div>
+          <div class="col-head">Висота %</div>
+          <div class="mr"><label>Мін</label><input type="range" id="b-hn" min="10" max="100" step="1" value="40"><span class="val" id="db-hn">40</span></div>
+          <div class="mr"><label>Макс</label><input type="range" id="b-hx" min="20" max="100" step="1" value="100"><span class="val" id="db-hx">100</span></div>
+          <div class="mr"><label>Хвиль</label><input type="range" id="b-hw" min="1" max="5" step="1" value="1"><span class="val" id="db-hw">1</span></div>
+          <div class="mr"><label>Фаза</label><input type="range" id="b-hp" min="0" max="360" step="5" value="270"><span class="val" id="db-hp">270°</span></div>
+        </div>
+      </div>
+      <div class="mr" style="margin-top:8px"><label>Кількість</label><input type="range" id="b-n" min="2" max="60" step="1" value="26"><span class="val" id="db-n">26</span></div>
+      <div class="mr"><label>Старт °</label><input type="range" id="b-rot" min="0" max="360" step="1" value="0"><span class="val" id="db-rot">0°</span></div>
+      <div class="mr"><label>Закрутка</label><input type="range" id="b-sw" min="-60" max="60" step=".5" value="0"><span class="val" id="db-sw">0°</span></div>
+    </div>
+
+    <div class="sec">
+      <div class="stitle">Вигляд</div>
+      <div class="segs">
+        <button class="on" onclick="setTheme('dark',this)">Темний</button>
+        <button onclick="setTheme('light',this)">Світлий</button>
+        <button onclick="setTheme('blue',this)">Синій</button>
+      </div>
+      <div class="row" style="margin-top:6px"><label>Фон</label>
+        <div class="segs" style="flex:1;margin-bottom:0">
+          <button class="on" onclick="setBg('match',this)">Авто</button>
+          <button onclick="setBg('black',this)">Чорний</button>
+          <button onclick="setBg('white',this)">Білий</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ctrl-footer">
+    <button class="xbtn" onclick="exportPNG()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Зберегти PNG (4×)
+    </button>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+const DPR = window.devicePixelRatio || 1;
+
+let SIZE = 420;
+function resizeCanvas() {
+  const side = document.querySelector('.canvas-side');
+  const w = side.clientWidth - 40;
+  const h = side.clientHeight - 80;
+  SIZE = Math.min(w, h, 560);
+  cv.style.width = SIZE + 'px';
+  cv.style.height = SIZE + 'px';
+  cv.width = SIZE * DPR;
+  cv.height = SIZE * DPR;
+  ctx.scale(DPR, DPR);
+  draw();
+}
+
+let extDir = 'up', theme = 'dark', bgMode = 'match';
+let isDrag = false, manRX = -28, manRY = 18;
+let raf = null, lastEvt = null;
+
+const g = id => document.getElementById(id);
+const v = id => parseFloat(g(id).value);
+
+function setSt(d,btn){extDir=d;btn.closest('.segs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn));draw()}
+function setTheme(t,btn){theme=t;btn.closest('.segs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn));draw()}
+function setBg(b,btn){bgMode=b;btn.closest('.segs').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===btn));draw()}
+
+cv.addEventListener('mousedown', e=>{isDrag=true;});
+window.addEventListener('mousemove', e=>{
+  if(!isDrag)return;
+  manRY+=e.movementX*0.45; manRX+=e.movementY*0.45;
+  manRX=Math.max(-80,Math.min(80,manRX));
+  g('v-rx').value=Math.round(manRX);
+  g('v-ry').value=Math.round(((manRY%360)+360)%360-180);
+  draw();
+});
+window.addEventListener('mouseup',()=>{isDrag=false;});
+cv.addEventListener('touchstart',e=>{isDrag=true;lastEvt=e.touches[0];e.preventDefault();},{passive:false});
+window.addEventListener('touchmove',e=>{
+  if(!isDrag||!lastEvt)return;
+  const t=e.touches[0];
+  manRY+=(t.clientX-lastEvt.clientX)*0.45;
+  manRX+=(t.clientY-lastEvt.clientY)*0.45;
+  lastEvt=t; manRX=Math.max(-80,Math.min(80,manRX));
+  draw();
+},{passive:false});
+window.addEventListener('touchend',()=>{isDrag=false;lastEvt=null;});
+
+function resetView(){manRX=-28;manRY=18;g('v-rx').value=-28;g('v-ry').value=18;g('v-sc').value=110;draw();}
+
+function project(x,y,z,rxD,ryD,sc){
+  const CX=SIZE/2,CY=SIZE/2;
+  const rx=rxD*Math.PI/180,ry=ryD*Math.PI/180;
+  const x1=x*Math.cos(ry)+z*Math.sin(ry);
+  const z1=-x*Math.sin(ry)+z*Math.cos(ry);
+  const y1=y*Math.cos(rx)-z1*Math.sin(rx);
+  const z2=y*Math.sin(rx)+z1*Math.cos(rx);
+  const fov=700,pz=fov/(fov+z2+400);
+  return{sx:CX+x1*sc*pz,sy:CY+y1*sc*pz,z:z2};
+}
+
+function wave(t,mn,mx,waves,ph){
+  return mn+(mx-mn)*(Math.sin(2*Math.PI*waves*t+ph*Math.PI/180)+1)/2;
+}
+
+function buildBars(n,ri,ro,wn,wx,ww,wp,hn,hx,hw,hp,startRot,swOff,gap){
+  const bars=[],zoneH=ro-ri,step=360/n;
+  for(let i=0;i<n;i++){
+    const t=i/n;
+    const aR=(startRot+step*i+swOff*t)*Math.PI/180;
+    const bw=Math.max(wave(t,wn,wx,ww,wp)-gap,0.5);
+    const bh=Math.max(zoneH*wave(t,hn/100,hx/100,hw,hp),2);
+    const cx=Math.sin(aR),cy=-Math.cos(aR);
+    const px=-cy,py=cx;
+    bars.push({cx,cy,px,py,ri,barH:bh,bw});
+  }
+  return bars;
+}
+
+function renderBars(renderCtx,bars,extD,rx,ry,sc,fillCol,edgeCol,renderSize){
+  for(const bar of bars){
+    const{cx,cy,px,py,ri,barH,bw}=bar;
+    const hw=bw/2,ro=ri+barH;
+    let dx=0,dy=0,dz=0;
+    if(extDir==='up')dz=-extD;
+    else if(extDir==='down')dz=extD;
+    else{dx=cx*extD;dy=cy*extD;}
+    const base=[[cx*ri-px*hw,cy*ri-py*hw,0],[cx*ri+px*hw,cy*ri+py*hw,0],[cx*ro+px*hw,cy*ro+py*hw,0],[cx*ro-px*hw,cy*ro-py*hw,0]];
+    const top=base.map(([x,y,z])=>[x+dx,y+dy,z+dz]);
+    const pb=base.map(p=>project(p[0],p[1],p[2],rx,ry,sc));
+    const pt=top.map(p=>project(p[0],p[1],p[2],rx,ry,sc));
+    function face(pts){
+      renderCtx.beginPath();
+      renderCtx.moveTo(pts[0].sx,pts[0].sy);
+      for(let k=1;k<pts.length;k++)renderCtx.lineTo(pts[k].sx,pts[k].sy);
+      renderCtx.closePath();
+      renderCtx.fillStyle=fillCol;renderCtx.fill();
+      renderCtx.strokeStyle=edgeCol;renderCtx.lineWidth=0.6;renderCtx.stroke();
+    }
+    face([pb[0],pb[1],pt[1],pt[0]]);
+    face([pb[1],pb[2],pt[2],pt[1]]);
+    face([pb[2],pb[3],pt[3],pt[2]]);
+    face([pb[3],pb[0],pt[0],pt[3]]);
+    face(pt);
+  }
+}
+
+function applyHole(renderCtx,ri,rx,ry,sc,bgCol,renderSize){
+  const riPx=ri*sc*(700/(700+400));
+  const ryProj=riPx*Math.abs(Math.cos(rx*Math.PI/180));
+  const CX=renderSize/2,CY=renderSize/2;
+  renderCtx.save();
+  renderCtx.globalCompositeOperation='destination-out';
+  renderCtx.beginPath();
+  renderCtx.ellipse(CX,CY,riPx,ryProj,0,0,Math.PI*2);
+  renderCtx.fillStyle='rgba(0,0,0,1)';renderCtx.fill();
+  renderCtx.restore();
+  renderCtx.save();
+  renderCtx.globalCompositeOperation='destination-over';
+  renderCtx.fillStyle=bgCol;renderCtx.fillRect(0,0,renderSize,renderSize);
+  renderCtx.restore();
+}
+
+function getColors(){
+  let fillCol,edgeCol,bgCol;
+  if(theme==='light'){fillCol='#1a1a1a';edgeCol='rgba(255,255,255,0.15)';bgCol='#f0f0f0';}
+  else if(theme==='blue'){fillCol='#4a8ad4';edgeCol='rgba(0,10,30,0.3)';bgCol='#080e1a';}
+  else{fillCol='#ffffff';edgeCol='rgba(0,0,0,0.3)';bgCol='#111111';}
+  if(bgMode==='black')bgCol='#111111';
+  if(bgMode==='white')bgCol='#f0f0f0';
+  return{fillCol,edgeCol,bgCol};
+}
+
+function draw(){
+  if(raf)cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(()=>{
+    const rx=v('v-rx'),ry=v('v-ry'),sc=v('v-sc')/100;
+    const extD=v('e-d'),gap=v('g-gap');
+    const ri=v('g-ri'),rm=v('g-rm'),ro=v('g-ro');
+    const an=Math.round(v('a-n')),bn=Math.round(v('b-n'));
+
+    g('dv-rx').textContent=Math.round(rx)+'°';g('dv-ry').textContent=Math.round(ry)+'°';g('dv-sc').textContent=Math.round(sc*100)+'%';
+    g('de-d').textContent=Math.round(extD);
+    g('dg-ri').textContent=Math.round(ri);g('dg-rm').textContent=Math.round(rm);g('dg-ro').textContent=Math.round(ro);g('dg-gap').textContent=gap;
+    g('da-n').textContent=an;g('da-wn').textContent=v('a-wn');g('da-wx').textContent=v('a-wx');g('da-ww').textContent=v('a-ww');g('da-wp').textContent=Math.round(v('a-wp'))+'°';
+    g('da-hn').textContent=Math.round(v('a-hn'));g('da-hx').textContent=Math.round(v('a-hx'));g('da-hw').textContent=v('a-hw');g('da-hp').textContent=Math.round(v('a-hp'))+'°';
+    g('da-rot').textContent=Math.round(v('a-rot'))+'°';g('da-sw').textContent=v('a-sw').toFixed(1)+'°';
+    g('db-n').textContent=bn;g('db-wn').textContent=v('b-wn');g('db-wx').textContent=v('b-wx');g('db-ww').textContent=v('b-ww');g('db-wp').textContent=Math.round(v('b-wp'))+'°';
+    g('db-hn').textContent=Math.round(v('b-hn'));g('db-hx').textContent=Math.round(v('b-hx'));g('db-hw').textContent=v('b-hw');g('db-hp').textContent=Math.round(v('b-hp'))+'°';
+    g('db-rot').textContent=Math.round(v('b-rot'))+'°';g('db-sw').textContent=v('b-sw').toFixed(1)+'°';
+
+    const{fillCol,edgeCol,bgCol}=getColors();
+    ctx.clearRect(0,0,SIZE,SIZE);
+    ctx.fillStyle=bgCol;ctx.fillRect(0,0,SIZE,SIZE);
+
+    const barsA=buildBars(an,ri,rm,v('a-wn'),v('a-wx'),v('a-ww'),v('a-wp'),v('a-hn'),v('a-hx'),v('a-hw'),v('a-hp'),v('a-rot'),v('a-sw'),gap);
+    const barsB=buildBars(bn,rm,ro,v('b-wn'),v('b-wx'),v('b-ww'),v('b-wp'),v('b-hn'),v('b-hx'),v('b-hw'),v('b-hp'),v('b-rot'),v('b-sw'),gap);
+    const all=[...barsA,...barsB];
+    all.sort((a,b)=>{
+      const za=project(a.cx*(a.ri+a.barH/2),a.cy*(a.ri+a.barH/2),0,rx,ry,sc).z;
+      const zb=project(b.cx*(b.ri+b.barH/2),b.cy*(b.ri+b.barH/2),0,rx,ry,sc).z;
+      return zb-za;
+    });
+    renderBars(ctx,all,extD,rx,ry,sc,fillCol,edgeCol,SIZE);
+    applyHole(ctx,ri,rx,ry,sc,bgCol,SIZE);
+  });
+}
+
+const ids=['v-rx','v-ry','v-sc','e-d','g-ri','g-rm','g-ro','g-gap',
+  'a-n','a-wn','a-wx','a-ww','a-wp','a-hn','a-hx','a-hw','a-hp','a-rot','a-sw',
+  'b-n','b-wn','b-wx','b-ww','b-wp','b-hn','b-hx','b-hw','b-hp','b-rot','b-sw'];
+ids.forEach(id=>g(id).addEventListener('input',draw));
+
+function exportPNG(){
+  const EX=4,EXSIZE=560;
+  const exCv=document.createElement('canvas');
+  exCv.width=EXSIZE*EX;exCv.height=EXSIZE*EX;
+  const exCtx=exCv.getContext('2d');
+  exCtx.scale(EX,EX);
+
+  const rx=v('v-rx'),ry=v('v-ry'),sc=v('v-sc')/100*1.3;
+  const extD=v('e-d'),gap=v('g-gap');
+  const ri=v('g-ri'),rm=v('g-rm'),ro=v('g-ro');
+  const an=Math.round(v('a-n')),bn=Math.round(v('b-n'));
+  const{fillCol,edgeCol,bgCol}=getColors();
+
+  exCtx.fillStyle=bgCol;exCtx.fillRect(0,0,EXSIZE,EXSIZE);
+
+  const origProject=project;
+  const exProject=(x,y,z,rxD,ryD,psc)=>{
+    const CX=EXSIZE/2,CY=EXSIZE/2;
+    const rxr=rxD*Math.PI/180,ryr=ryD*Math.PI/180;
+    const x1=x*Math.cos(ryr)+z*Math.sin(ryr);
+    const z1=-x*Math.sin(ryr)+z*Math.cos(ryr);
+    const y1=y*Math.cos(rxr)-z1*Math.sin(rxr);
+    const z2=y*Math.sin(rxr)+z1*Math.cos(rxr);
+    const fov=700,pz=fov/(fov+z2+400);
+    return{sx:CX+x1*psc*pz,sy:CY+y1*psc*pz,z:z2};
+  };
+
+  const barsA=buildBars(an,ri,rm,v('a-wn'),v('a-wx'),v('a-ww'),v('a-wp'),v('a-hn'),v('a-hx'),v('a-hw'),v('a-hp'),v('a-rot'),v('a-sw'),gap);
+  const barsB=buildBars(bn,rm,ro,v('b-wn'),v('b-wx'),v('b-ww'),v('b-wp'),v('b-hn'),v('b-hx'),v('b-hw'),v('b-hp'),v('b-rot'),v('b-sw'),gap);
+  const all=[...barsA,...barsB];
+  all.sort((a,b)=>{
+    const za=exProject(a.cx*(a.ri+a.barH/2),a.cy*(a.ri+a.barH/2),0,rx,ry,sc).z;
+    const zb=exProject(b.cx*(b.ri+b.barH/2),b.cy*(b.ri+b.barH/2),0,rx,ry,sc).z;
+    return zb-za;
+  });
+
+  for(const bar of all){
+    const{cx,cy,px,py,ri:bri,barH,bw}=bar;
+    const hw=bw/2,bro=bri+barH;
+    let dx=0,dy=0,dz=0;
+    if(extDir==='up')dz=-extD;
+    else if(extDir==='down')dz=extD;
+    else{dx=cx*extD;dy=cy*extD;}
+    const base=[[cx*bri-px*hw,cy*bri-py*hw,0],[cx*bri+px*hw,cy*bri+py*hw,0],[cx*bro+px*hw,cy*bro+py*hw,0],[cx*bro-px*hw,cy*bro-py*hw,0]];
+    const top=base.map(([x,y,z])=>[x+dx,y+dy,z+dz]);
+    const pb=base.map(p=>exProject(p[0],p[1],p[2],rx,ry,sc));
+    const pt=top.map(p=>exProject(p[0],p[1],p[2],rx,ry,sc));
+    function face(pts){
+      exCtx.beginPath();exCtx.moveTo(pts[0].sx,pts[0].sy);
+      for(let k=1;k<pts.length;k++)exCtx.lineTo(pts[k].sx,pts[k].sy);
+      exCtx.closePath();exCtx.fillStyle=fillCol;exCtx.fill();
+      exCtx.strokeStyle=edgeCol;exCtx.lineWidth=0.6;exCtx.stroke();
+    }
+    face([pb[0],pb[1],pt[1],pt[0]]);face([pb[1],pb[2],pt[2],pt[1]]);
+    face([pb[2],pb[3],pt[3],pt[2]]);face([pb[3],pb[0],pt[0],pt[3]]);face(pt);
+  }
+
+  const riPx=ri*sc*(700/(700+400));
+  exCtx.save();
+  exCtx.globalCompositeOperation='destination-out';
+  exCtx.beginPath();
+  exCtx.ellipse(EXSIZE/2,EXSIZE/2,riPx,riPx*Math.abs(Math.cos(rx*Math.PI/180)),0,0,Math.PI*2);
+  exCtx.fillStyle='rgba(0,0,0,1)';exCtx.fill();
+  exCtx.restore();
+  exCtx.save();
+  exCtx.globalCompositeOperation='destination-over';
+  exCtx.fillStyle=bgCol;exCtx.fillRect(0,0,EXSIZE,EXSIZE);
+  exCtx.restore();
+
+  const a=document.createElement('a');
+  a.download='iimi-logo-4x.png';
+  a.href=exCv.toDataURL('image/png');
+  a.click();
+}
+
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();
+</script>
+</body>
+</html>
