@@ -378,7 +378,6 @@ function draw(){
       return zb-za;
     });
     renderBars(ctx,all,extD,rx,ry,sc,fillCol,edgeCol,SIZE);
-    applyHole(ctx,ri,rx,ry,sc,bgCol,SIZE);
   });
 }
 
@@ -443,18 +442,6 @@ function exportPNG(){
     face([pb[0],pb[1],pt[1],pt[0]]);face([pb[1],pb[2],pt[2],pt[1]]);
     face([pb[2],pb[3],pt[3],pt[2]]);face([pb[3],pb[0],pt[0],pt[3]]);face(pt);
   }
-
-  const riPx=ri*sc*(700/(700+400));
-  exCtx.save();
-  exCtx.globalCompositeOperation='destination-out';
-  exCtx.beginPath();
-  exCtx.ellipse(EXSIZE/2,EXSIZE/2,riPx,riPx*Math.abs(Math.cos(rx*Math.PI/180)),0,0,Math.PI*2);
-  exCtx.fillStyle='rgba(0,0,0,1)';exCtx.fill();
-  exCtx.restore();
-  exCtx.save();
-  exCtx.globalCompositeOperation='destination-over';
-  exCtx.fillStyle=bgCol;exCtx.fillRect(0,0,EXSIZE,EXSIZE);
-  exCtx.restore();
 
   const a=document.createElement('a');
   a.download='iimi-logo-4x.png';
