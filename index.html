@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -103,100 +103,100 @@ canvas:active{cursor:grabbing}
 
 <div class="canvas-side">
   <canvas id="c"></canvas>
-  <p class="hint">тягни мишею для обертання</p>
-  <button class="reset-btn" onclick="resetView()">скинути вигляд</button>
+  <p class="hint">drag to rotate</p>
+  <button class="reset-btn" onclick="resetView()">reset view</button>
 </div>
 
 <div class="ctrl-side">
   <div class="ctrl-scroll">
 
     <div class="sec">
-      <div class="stitle">Камера</div>
-      <div class="row"><label>Нахил X</label><input type="range" id="v-rx" min="-80" max="80" step="1" value="-28"><span class="val" id="dv-rx">-28°</span></div>
-      <div class="row"><label>Поворот Y</label><input type="range" id="v-ry" min="-180" max="180" step="1" value="18"><span class="val" id="dv-ry">18°</span></div>
-      <div class="row"><label>Масштаб</label><input type="range" id="v-sc" min="30" max="220" step="1" value="110"><span class="val" id="dv-sc">110%</span></div>
+      <div class="stitle">Camera</div>
+      <div class="row"><label>Tilt X</label><input type="range" id="v-rx" min="-80" max="80" step="1" value="-28"><span class="val" id="dv-rx">-28°</span></div>
+      <div class="row"><label>Rot Y</label><input type="range" id="v-ry" min="-180" max="180" step="1" value="18"><span class="val" id="dv-ry">18°</span></div>
+      <div class="row"><label>Scale</label><input type="range" id="v-sc" min="30" max="220" step="1" value="110"><span class="val" id="dv-sc">110%</span></div>
     </div>
 
     <div class="sec">
       <div class="stitle">Extrude</div>
-      <div class="row"><label>Глибина</label><input type="range" id="e-d" min="0" max="70" step="1" value="10"><span class="val" id="de-d">10</span></div>
-      <div class="row"><label>Напрямок</label>
+      <div class="row"><label>Depth</label><input type="range" id="e-d" min="0" max="70" step="1" value="10"><span class="val" id="de-d">10</span></div>
+      <div class="row"><label>Dir</label>
         <div class="segs" style="flex:1;margin-bottom:0">
-          <button class="on" onclick="setSt('up',this)">↑ Вгору</button>
-          <button onclick="setSt('down',this)">↓ Вниз</button>
-          <button onclick="setSt('out',this)">→ Назовні</button>
+          <button class="on" onclick="setSt('up',this)">↑ Up</button>
+          <button onclick="setSt('down',this)">↓ Down</button>
+          <button onclick="setSt('out',this)">→ Out</button>
         </div>
       </div>
     </div>
 
     <div class="sec">
-      <div class="stitle">Радіуси</div>
-      <div class="row"><label>Внутр r (A)</label><input type="range" id="g-ri" min="0" max="100" step="1" value="40"><span class="val" id="dg-ri">40</span></div>
-      <div class="row"><label>Середній r</label><input type="range" id="g-rm" min="20" max="130" step="1" value="78"><span class="val" id="dg-rm">78</span></div>
-      <div class="row"><label>Зовн r (B)</label><input type="range" id="g-ro" min="40" max="148" step="1" value="118"><span class="val" id="dg-ro">118</span></div>
+      <div class="stitle">Radii</div>
+      <div class="row"><label>Inner R</label><input type="range" id="g-ri" min="0" max="100" step="1" value="40"><span class="val" id="dg-ri">40</span></div>
+      <div class="row"><label>Mid R</label><input type="range" id="g-rm" min="20" max="130" step="1" value="78"><span class="val" id="dg-rm">78</span></div>
+      <div class="row"><label>Outer R</label><input type="range" id="g-ro" min="40" max="148" step="1" value="118"><span class="val" id="dg-ro">118</span></div>
       <div class="row"><label>Gap</label><input type="range" id="g-gap" min="0" max="14" step=".5" value="2"><span class="val" id="dg-gap">2</span></div>
     </div>
 
     <div class="sec">
-      <div class="stitle">Сегмент A <span class="dot dot-a"></span></div>
-      <div class="info">від внутр r → середній r</div>
+      <div class="stitle">Segment A <span class="dot dot-a"></span></div>
+      <div class="info">inner R → mid R</div>
       <div class="two-col">
         <div>
-          <div class="col-head">Товщина</div>
-          <div class="mr"><label>Мін</label><input type="range" id="a-wn" min="1" max="20" step=".5" value="4"><span class="val" id="da-wn">4</span></div>
-          <div class="mr"><label>Макс</label><input type="range" id="a-wx" min="2" max="30" step=".5" value="13"><span class="val" id="da-wx">13</span></div>
-          <div class="mr"><label>Хвиль</label><input type="range" id="a-ww" min="1" max="5" step="1" value="1"><span class="val" id="da-ww">1</span></div>
-          <div class="mr"><label>Фаза</label><input type="range" id="a-wp" min="0" max="360" step="5" value="0"><span class="val" id="da-wp">0°</span></div>
+          <div class="col-head">Width</div>
+          <div class="mr"><label>Min</label><input type="range" id="a-wn" min="1" max="20" step=".5" value="4"><span class="val" id="da-wn">4</span></div>
+          <div class="mr"><label>Max</label><input type="range" id="a-wx" min="2" max="30" step=".5" value="13"><span class="val" id="da-wx">13</span></div>
+          <div class="mr"><label>Waves</label><input type="range" id="a-ww" min="1" max="5" step="1" value="1"><span class="val" id="da-ww">1</span></div>
+          <div class="mr"><label>Phase</label><input type="range" id="a-wp" min="0" max="360" step="5" value="0"><span class="val" id="da-wp">0°</span></div>
         </div>
         <div>
-          <div class="col-head">Висота %</div>
-          <div class="mr"><label>Мін</label><input type="range" id="a-hn" min="10" max="100" step="1" value="40"><span class="val" id="da-hn">40</span></div>
-          <div class="mr"><label>Макс</label><input type="range" id="a-hx" min="20" max="100" step="1" value="100"><span class="val" id="da-hx">100</span></div>
-          <div class="mr"><label>Хвиль</label><input type="range" id="a-hw" min="1" max="5" step="1" value="1"><span class="val" id="da-hw">1</span></div>
-          <div class="mr"><label>Фаза</label><input type="range" id="a-hp" min="0" max="360" step="5" value="90"><span class="val" id="da-hp">90°</span></div>
+          <div class="col-head">Length %</div>
+          <div class="mr"><label>Min</label><input type="range" id="a-hn" min="10" max="100" step="1" value="40"><span class="val" id="da-hn">40</span></div>
+          <div class="mr"><label>Max</label><input type="range" id="a-hx" min="20" max="100" step="1" value="100"><span class="val" id="da-hx">100</span></div>
+          <div class="mr"><label>Waves</label><input type="range" id="a-hw" min="1" max="5" step="1" value="1"><span class="val" id="da-hw">1</span></div>
+          <div class="mr"><label>Phase</label><input type="range" id="a-hp" min="0" max="360" step="5" value="90"><span class="val" id="da-hp">90°</span></div>
         </div>
       </div>
-      <div class="mr" style="margin-top:8px"><label>Кількість</label><input type="range" id="a-n" min="2" max="60" step="1" value="20"><span class="val" id="da-n">20</span></div>
-      <div class="mr"><label>Старт °</label><input type="range" id="a-rot" min="0" max="360" step="1" value="0"><span class="val" id="da-rot">0°</span></div>
-      <div class="mr"><label>Закрутка</label><input type="range" id="a-sw" min="-60" max="60" step=".5" value="0"><span class="val" id="da-sw">0°</span></div>
+      <div class="mr" style="margin-top:8px"><label>Count</label><input type="range" id="a-n" min="2" max="60" step="1" value="20"><span class="val" id="da-n">20</span></div>
+      <div class="mr"><label>Start</label><input type="range" id="a-rot" min="0" max="360" step="1" value="0"><span class="val" id="da-rot">0°</span></div>
+      <div class="mr"><label>Twist</label><input type="range" id="a-sw" min="-60" max="60" step=".5" value="0"><span class="val" id="da-sw">0°</span></div>
     </div>
 
     <div class="sec">
-      <div class="stitle">Сегмент B <span class="dot dot-b"></span></div>
-      <div class="info">від середній r → зовн r</div>
+      <div class="stitle">Segment B <span class="dot dot-b"></span></div>
+      <div class="info">mid R → outer R</div>
       <div class="two-col">
         <div>
-          <div class="col-head">Товщина</div>
-          <div class="mr"><label>Мін</label><input type="range" id="b-wn" min="1" max="20" step=".5" value="2"><span class="val" id="db-wn">2</span></div>
-          <div class="mr"><label>Макс</label><input type="range" id="b-wx" min="2" max="30" step=".5" value="7"><span class="val" id="db-wx">7</span></div>
-          <div class="mr"><label>Хвиль</label><input type="range" id="b-ww" min="1" max="5" step="1" value="1"><span class="val" id="db-ww">1</span></div>
-          <div class="mr"><label>Фаза</label><input type="range" id="b-wp" min="0" max="360" step="5" value="180"><span class="val" id="db-wp">180°</span></div>
+          <div class="col-head">Width</div>
+          <div class="mr"><label>Min</label><input type="range" id="b-wn" min="1" max="20" step=".5" value="2"><span class="val" id="db-wn">2</span></div>
+          <div class="mr"><label>Max</label><input type="range" id="b-wx" min="2" max="30" step=".5" value="7"><span class="val" id="db-wx">7</span></div>
+          <div class="mr"><label>Waves</label><input type="range" id="b-ww" min="1" max="5" step="1" value="1"><span class="val" id="db-ww">1</span></div>
+          <div class="mr"><label>Phase</label><input type="range" id="b-wp" min="0" max="360" step="5" value="180"><span class="val" id="db-wp">180°</span></div>
         </div>
         <div>
-          <div class="col-head">Висота %</div>
-          <div class="mr"><label>Мін</label><input type="range" id="b-hn" min="10" max="100" step="1" value="40"><span class="val" id="db-hn">40</span></div>
-          <div class="mr"><label>Макс</label><input type="range" id="b-hx" min="20" max="100" step="1" value="100"><span class="val" id="db-hx">100</span></div>
-          <div class="mr"><label>Хвиль</label><input type="range" id="b-hw" min="1" max="5" step="1" value="1"><span class="val" id="db-hw">1</span></div>
-          <div class="mr"><label>Фаза</label><input type="range" id="b-hp" min="0" max="360" step="5" value="270"><span class="val" id="db-hp">270°</span></div>
+          <div class="col-head">Length %</div>
+          <div class="mr"><label>Min</label><input type="range" id="b-hn" min="10" max="100" step="1" value="40"><span class="val" id="db-hn">40</span></div>
+          <div class="mr"><label>Max</label><input type="range" id="b-hx" min="20" max="100" step="1" value="100"><span class="val" id="db-hx">100</span></div>
+          <div class="mr"><label>Waves</label><input type="range" id="b-hw" min="1" max="5" step="1" value="1"><span class="val" id="db-hw">1</span></div>
+          <div class="mr"><label>Phase</label><input type="range" id="b-hp" min="0" max="360" step="5" value="270"><span class="val" id="db-hp">270°</span></div>
         </div>
       </div>
-      <div class="mr" style="margin-top:8px"><label>Кількість</label><input type="range" id="b-n" min="2" max="60" step="1" value="26"><span class="val" id="db-n">26</span></div>
-      <div class="mr"><label>Старт °</label><input type="range" id="b-rot" min="0" max="360" step="1" value="0"><span class="val" id="db-rot">0°</span></div>
-      <div class="mr"><label>Закрутка</label><input type="range" id="b-sw" min="-60" max="60" step=".5" value="0"><span class="val" id="db-sw">0°</span></div>
+      <div class="mr" style="margin-top:8px"><label>Count</label><input type="range" id="b-n" min="2" max="60" step="1" value="26"><span class="val" id="db-n">26</span></div>
+      <div class="mr"><label>Start</label><input type="range" id="b-rot" min="0" max="360" step="1" value="0"><span class="val" id="db-rot">0°</span></div>
+      <div class="mr"><label>Twist</label><input type="range" id="b-sw" min="-60" max="60" step=".5" value="0"><span class="val" id="db-sw">0°</span></div>
     </div>
 
     <div class="sec">
-      <div class="stitle">Вигляд</div>
+      <div class="stitle">View</div>
       <div class="segs">
-        <button class="on" onclick="setTheme('dark',this)">Темний</button>
-        <button onclick="setTheme('light',this)">Світлий</button>
-        <button onclick="setTheme('blue',this)">Синій</button>
+        <button class="on" onclick="setTheme('dark',this)">Dark</button>
+        <button onclick="setTheme('light',this)">Light</button>
+        <button onclick="setTheme('blue',this)">Blue</button>
       </div>
-      <div class="row" style="margin-top:6px"><label>Фон</label>
+      <div class="row" style="margin-top:6px"><label>BG</label>
         <div class="segs" style="flex:1;margin-bottom:0">
-          <button class="on" onclick="setBg('match',this)">Авто</button>
-          <button onclick="setBg('black',this)">Чорний</button>
-          <button onclick="setBg('white',this)">Білий</button>
+          <button class="on" onclick="setBg('match',this)">Auto</button>
+          <button onclick="setBg('black',this)">Black</button>
+          <button onclick="setBg('white',this)">White</button>
         </div>
       </div>
     </div>
@@ -206,7 +206,7 @@ canvas:active{cursor:grabbing}
   <div class="ctrl-footer">
     <button class="xbtn" onclick="exportPNG()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Зберегти PNG (4×)
+      Save PNG (4×)
     </button>
   </div>
 </div>
@@ -385,6 +385,7 @@ function draw(){
       return zb-za;
     });
     renderBars(ctx,all,extD,rx,ry,sc,fillCol,edgeCol,SIZE);
+    applyHole(ctx,ri,rx,ry,sc,bgCol,SIZE);
   });
 }
 
@@ -408,7 +409,6 @@ function exportPNG(){
 
   exCtx.fillStyle=bgCol;exCtx.fillRect(0,0,EXSIZE,EXSIZE);
 
-  const origProject=project;
   const exProject=(x,y,z,rxD,ryD,psc)=>{
     const CX=EXSIZE/2,CY=EXSIZE/2;
     const rxr=rxD*Math.PI/180,ryr=ryD*Math.PI/180;
@@ -448,6 +448,8 @@ function exportPNG(){
     face([pb[0],pb[1],pt[1],pt[0]]);face([pb[1],pb[2],pt[2],pt[1]]);
     face([pb[2],pb[3],pt[3],pt[2]]);face([pb[3],pb[0],pt[0],pt[3]]);face(pt);
   }
+
+  applyHole(exCtx,ri,rx,ry,sc,bgCol,EXSIZE);
 
   const a=document.createElement('a');
   a.download='iimi-logo-4x.png';
