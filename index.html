@@ -287,21 +287,28 @@ function buildBars(n,ri,ro,wn,wx,ww,wp,hn,hx,hw,hp,startRot,swOff,gap){
     const bw=Math.max(wave(t,wn,wx,ww,wp)-gap,0.5);
     const bh=Math.max(zoneH*wave(t,hn/100,hx/100,hw,hp),2);
     const cx=Math.sin(aR),cy=-Math.cos(aR);
-    const px=-cy,py=cx;
-    bars.push({cx,cy,px,py,ri,barH:bh,bw});
+    bars.push({aR,cx,cy,ri,barH:bh,bw});
   }
   return bars;
 }
 
+function barBasePoints(bar){
+  const{aR,ri,barH,bw}=bar;
+  const ro=ri+barH;
+  const midR=Math.max((ri+ro)/2,1);
+  const ha=Math.min((bw/2)/midR,Math.PI/3);
+  const p=(ang,r)=>[Math.sin(ang)*r,-Math.cos(ang)*r,0];
+  return[p(aR-ha,ri),p(aR+ha,ri),p(aR+ha,ro),p(aR-ha,ro)];
+}
+
 function renderBars(renderCtx,bars,extD,rx,ry,sc,fillCol,edgeCol,renderSize){
   for(const bar of bars){
-    const{cx,cy,px,py,ri,barH,bw}=bar;
-    const hw=bw/2,ro=ri+barH;
+    const{cx,cy}=bar;
     let dx=0,dy=0,dz=0;
     if(extDir==='up')dz=-extD;
     else if(extDir==='down')dz=extD;
     else{dx=cx*extD;dy=cy*extD;}
-    const base=[[cx*ri-px*hw,cy*ri-py*hw,0],[cx*ri+px*hw,cy*ri+py*hw,0],[cx*ro+px*hw,cy*ro+py*hw,0],[cx*ro-px*hw,cy*ro-py*hw,0]];
+    const base=barBasePoints(bar);
     const top=base.map(([x,y,z])=>[x+dx,y+dy,z+dz]);
     const pb=base.map(p=>project(p[0],p[1],p[2],rx,ry,sc));
     const pt=top.map(p=>project(p[0],p[1],p[2],rx,ry,sc));
@@ -423,13 +430,12 @@ function exportPNG(){
   });
 
   for(const bar of all){
-    const{cx,cy,px,py,ri:bri,barH,bw}=bar;
-    const hw=bw/2,bro=bri+barH;
+    const{cx,cy}=bar;
     let dx=0,dy=0,dz=0;
     if(extDir==='up')dz=-extD;
     else if(extDir==='down')dz=extD;
     else{dx=cx*extD;dy=cy*extD;}
-    const base=[[cx*bri-px*hw,cy*bri-py*hw,0],[cx*bri+px*hw,cy*bri+py*hw,0],[cx*bro+px*hw,cy*bro+py*hw,0],[cx*bro-px*hw,cy*bro-py*hw,0]];
+    const base=barBasePoints(bar);
     const top=base.map(([x,y,z])=>[x+dx,y+dy,z+dz]);
     const pb=base.map(p=>exProject(p[0],p[1],p[2],rx,ry,sc));
     const pt=top.map(p=>exProject(p[0],p[1],p[2],rx,ry,sc));
