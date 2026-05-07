@@ -156,7 +156,6 @@ canvas:active{cursor:grabbing}
           <div class="mr"><label>Phase</label><input type="range" id="a-hp" min="0" max="360" step="5" value="90"><span class="val" id="da-hp">90°</span></div>
         </div>
       </div>
-      <div class="mr" style="margin-top:8px"><label>Count</label><input type="range" id="a-n" min="2" max="60" step="1" value="20"><span class="val" id="da-n">20</span></div>
       <div class="mr"><label>Start</label><input type="range" id="a-rot" min="0" max="360" step="1" value="0"><span class="val" id="da-rot">0°</span></div>
       <div class="mr"><label>Twist</label><input type="range" id="a-sw" min="-60" max="60" step=".5" value="0"><span class="val" id="da-sw">0°</span></div>
     </div>
@@ -180,7 +179,6 @@ canvas:active{cursor:grabbing}
           <div class="mr"><label>Phase</label><input type="range" id="b-hp" min="0" max="360" step="5" value="270"><span class="val" id="db-hp">270°</span></div>
         </div>
       </div>
-      <div class="mr" style="margin-top:8px"><label>Count</label><input type="range" id="b-n" min="2" max="60" step="1" value="26"><span class="val" id="db-n">26</span></div>
       <div class="mr"><label>Start</label><input type="range" id="b-rot" min="0" max="360" step="1" value="0"><span class="val" id="db-rot">0°</span></div>
       <div class="mr"><label>Twist</label><input type="range" id="b-sw" min="-60" max="60" step=".5" value="0"><span class="val" id="db-sw">0°</span></div>
     </div>
@@ -344,15 +342,15 @@ function draw(){
     const rx=v('v-rx'),ry=v('v-ry'),sc=v('v-sc')/100;
     const extD=v('e-d'),gap=v('g-gap');
     const ri=v('g-ri'),rm=v('g-rm'),ro=v('g-ro');
-    const an=Math.round(v('a-n')),bn=Math.round(v('b-n'));
+    const an=24,bn=24;
 
     g('dv-rx').textContent=Math.round(rx)+'°';g('dv-ry').textContent=Math.round(ry)+'°';g('dv-sc').textContent=Math.round(sc*100)+'%';
     g('de-d').textContent=Math.round(extD);
     g('dg-ri').textContent=Math.round(ri);g('dg-rm').textContent=Math.round(rm);g('dg-ro').textContent=Math.round(ro);g('dg-gap').textContent=gap;
-    g('da-n').textContent=an;g('da-wn').textContent=v('a-wn');g('da-wx').textContent=v('a-wx');g('da-ww').textContent=v('a-ww');g('da-wp').textContent=Math.round(v('a-wp'))+'°';
+    g('da-wn').textContent=v('a-wn');g('da-wx').textContent=v('a-wx');g('da-ww').textContent=v('a-ww');g('da-wp').textContent=Math.round(v('a-wp'))+'°';
     g('da-hn').textContent=Math.round(v('a-hn'));g('da-hx').textContent=Math.round(v('a-hx'));g('da-hw').textContent=v('a-hw');g('da-hp').textContent=Math.round(v('a-hp'))+'°';
     g('da-rot').textContent=Math.round(v('a-rot'))+'°';g('da-sw').textContent=v('a-sw').toFixed(1)+'°';
-    g('db-n').textContent=bn;g('db-wn').textContent=v('b-wn');g('db-wx').textContent=v('b-wx');g('db-ww').textContent=v('b-ww');g('db-wp').textContent=Math.round(v('b-wp'))+'°';
+    g('db-wn').textContent=v('b-wn');g('db-wx').textContent=v('b-wx');g('db-ww').textContent=v('b-ww');g('db-wp').textContent=Math.round(v('b-wp'))+'°';
     g('db-hn').textContent=Math.round(v('b-hn'));g('db-hx').textContent=Math.round(v('b-hx'));g('db-hw').textContent=v('b-hw');g('db-hp').textContent=Math.round(v('b-hp'))+'°';
     g('db-rot').textContent=Math.round(v('b-rot'))+'°';g('db-sw').textContent=v('b-sw').toFixed(1)+'°';
 
@@ -373,8 +371,8 @@ function draw(){
 }
 
 const ids=['v-rx','v-ry','v-sc','e-d','g-ri','g-rm','g-ro','g-gap',
-  'a-n','a-wn','a-wx','a-ww','a-wp','a-hn','a-hx','a-hw','a-hp','a-rot','a-sw',
-  'b-n','b-wn','b-wx','b-ww','b-wp','b-hn','b-hx','b-hw','b-hp','b-rot','b-sw'];
+  'a-wn','a-wx','a-ww','a-wp','a-hn','a-hx','a-hw','a-hp','a-rot','a-sw',
+  'b-wn','b-wx','b-ww','b-wp','b-hn','b-hx','b-hw','b-hp','b-rot','b-sw'];
 ids.forEach(id=>g(id).addEventListener('input',draw));
 
 function exportPNG(){
@@ -387,7 +385,7 @@ function exportPNG(){
   const rx=v('v-rx'),ry=v('v-ry'),sc=v('v-sc')/100*1.3;
   const extD=v('e-d'),gap=v('g-gap');
   const ri=v('g-ri'),rm=v('g-rm'),ro=v('g-ro');
-  const an=Math.round(v('a-n')),bn=Math.round(v('b-n'));
+  const an=24,bn=24;
   const{fillCol,edgeCol,bgCol}=getColors();
 
   exCtx.fillStyle=bgCol;exCtx.fillRect(0,0,EXSIZE,EXSIZE);
